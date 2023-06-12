@@ -6,7 +6,8 @@ const __dirname = path.dirname(__filename);
 
 const defaultsDir = path.join(__dirname, '..', 'defaults');
 
-const throwCallback = () => {};
+const throwCallback = (err) => {};
+
 // Todo, asyncify
 function checkConfig(dirname, filename) {
     const dirExists = fs.existsSync(dirname, throwCallback);
@@ -16,16 +17,26 @@ function checkConfig(dirname, filename) {
 
     const fileExists = fs.existsSync(filename, throwCallback);
     if (!fileExists) {
-        const defaultConfig = JSON.parse(fs.readFileSync(path.join(defaultsDir, 'bot.json')));
-        fs.appendFile(filename, JSON.stringify(defaultConfig, null, 4), throwCallback);
+        const content = fs.readFileSync(path.join(defaultsDir, 'bot.json'));
+        const filePath = path.resolve(filename);
+        fs.appendFileSync(filePath, content, throwCallback);
     }
 
     const dotEnvExists = fs.existsSync(path.resolve('.env'), throwCallback);
     if (!dotEnvExists) {
         // Todo, add a logger
         console.error("dotenv file not found, generating. Please add your discord bot token to the .env file created.");
-        const content = fs.readFileSync(path.join(defaultsDir, 'dotenv'), throwCallback);
-        fs.appendFile(path.resolve('.env'), content, throwCallback);
+        const content = fs.readFileSync(path.join(defaultsDir, 'dotenv'), throwCallback).toString();
+        const filePath = path.resolve('.env');
+        fs.appendFileSync(filePath, content, throwCallback);
+    }
+
+    const loggerFile = 'logger.json';
+    const loggerConfExists = fs.existsSync(path.resolve(path.join(dirname, loggerFile)), throwCallback);
+    if (!loggerConfExists) {
+        const content = fs.readFileSync(path.join(defaultsDir, loggerFile)).toString();
+        const filePath = path.resolve(path.join(dirname, loggerFile));
+        fs.appendFileSync(filePath, content, throwCallback);
     }
 }
 // Todo, asyncify

@@ -1,6 +1,7 @@
 import dotenv from 'dotenv';
 import setup from '../init/setup.js';
 import Options from './options.js';
+import Logger from '../modules/logger.js';
 import {
     initClient,
     initCommands
@@ -20,7 +21,8 @@ class Bot {
     }
 
     init() {
-        this.client = initClient(this);
+        // this.client = initClient(this);
+        this.logger = new Logger(this.options.config.dir);
         const cmdReturn = initCommands(this);
         this.commands = cmdReturn.cmds;
         this.commandGroups = cmdReturn.groups;
